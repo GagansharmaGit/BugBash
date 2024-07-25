@@ -2,7 +2,7 @@ import { Permission } from "appwrite";
 import { questionAttachmentBucket } from "../name";
 import { storage } from "./config";
 
-export default async function createStorageCollection(){
+export default async function getOrCreateStorage(){
     try {
         await storage.getBucket(questionAttachmentBucket);
         console.log("storage connected")

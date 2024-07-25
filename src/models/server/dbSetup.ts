@@ -1,7 +1,6 @@
 import { db } from "../name";
 import createQuestionCollections from "./question.collection";
 import createCommentCollection from "./comment.collection";
-import createStorageCollection from "./storage.collection";
 import createAnswerCollection from "./answer.collection";
 import createVoteCollection from "./vote.collection"
 import { databases } from "./config";
@@ -24,7 +23,7 @@ export default async function getOrCreateDb(){
             ])
 
             console.log("Collection Created")
-            console.log("Database Connected")
+            console.log("Database Connected is created in the db.setup")
         } catch (error) {
             console.log("Error while creating the database in the dbSetup.ts file: ",error)
         }

@@ -27,7 +27,6 @@ export default async function createQuestionCollections(){
         databases.createStringAttribute(db,questionCollection,"title",100,true),
         databases.createStringAttribute(db,questionCollection,"content",10000,true),
         databases.createStringAttribute(db,questionCollection,"authorID",100,true),
-        databases.createStringAttribute(db,questionCollection,"title",100,true),
         databases.createStringAttribute(db,questionCollection,"tags",100,true,undefined,true),
         databases.createStringAttribute(db,questionCollection,"attachmentId",100,false),
     ]);
