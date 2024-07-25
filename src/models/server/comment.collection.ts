@@ -2,7 +2,7 @@ import { Permission } from "appwrite";
 import { commentCollection, db } from "../name";
 import { databases } from "./config";
 
-export default async function(){
+export default async function createCommentCollection(){
     //Creating Collections
     await databases.createCollection(db,commentCollection,commentCollection,
         [
@@ -32,7 +32,22 @@ export default async function(){
                 "types",
                 ["answer","question"],
                 true
+            ),
+            databases.createStringAttribute(
+                db,
+                commentCollection,
+                "typeId",
+                100,
+                true
+            ),
+            databases.createStringAttribute(
+                db,
+                commentCollection,
+                "authorId",
+                100,
+                true
             )
         ]
     )
+    console.log("Comment Attribute Created")
 }
