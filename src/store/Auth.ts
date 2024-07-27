@@ -6,14 +6,14 @@ import { account } from "@/models/client/config";
 import { Mode } from "fs";
 import { Suspense } from "react";
 
-export interface Userprefs {
+export interface UserPrefs {
     reputation :number
 }
 
 interface IAuthStore{
     session: Models.Session | null;
     jwt: string | null;
-    user: Models.User<any> | null;
+    user: Models.User<UserPrefs> | null;
     hydrated: boolean;
 
     setHydrated(): void;
@@ -64,12 +64,12 @@ export const useAuthStore = create<IAuthStore>()(
             async login(email:string,password:string){
                 try {
                     const session = await account.createEmailPasswordSession(email,password);
-                    const [userAgent,{jwt}] = await Promise.all([
+                    const [user,{jwt}] = await Promise.all([
                         account.get(),
                         account.createJWT()
                     ])
 
-                    if(!userAgent.prefs?.reputation){
+                    if(!user.prefs?.reputation){
                         await account.updatePrefs(
                             reputation:0
                         )
@@ -103,15 +103,15 @@ export const useAuthStore = create<IAuthStore>()(
 
             async logout(){
                 try {
-                    await account.deleteSession();
+                    await account.deleteSessions();
                     set({session:null, jwt:null, user:null})
                 } catch (error) {
                     console.log("Error in the auth.ts Logout method",error);
-                    return({
-                        success : false,
-                        error: error instanceof AppwriteException ?
-                        error :null
-                    })
+                    // return({
+                    //     success : false,
+                    //     error: error instanceof AppwriteException ?
+                    //     error :null
+                    // })
                 }
             },
         })),
