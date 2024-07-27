@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 import { AppwriteException,ID,Models } from "appwrite";
 import { account } from "@/models/client/config";
 import { Mode } from "fs";
+import { Suspense } from "react";
 
 export interface Userprefs {
     reputation :number
@@ -47,9 +48,72 @@ export const useAuthStore = create<IAuthStore>()(
             user:null,
             hydrated:false,
             setHydrated(){
-                set({hydrated:true})
+                set({hydrated:true});
             },
-            
+
+            async verifySession(){
+                try {
+                   const session = await account.getSession("current");
+                    set({session});
+                     
+                } catch (error) {
+                    console.log("Error int the auth.ts",error)
+                }
+            },
+
+            async login(email:string,password:string){
+                try {
+                    const session = await account.createEmailPasswordSession(email,password);
+                    const [userAgent,{jwt}] = await Promise.all([
+                        account.get(),
+                        account.createJWT()
+                    ])
+
+                    if(!userAgent.prefs?.reputation){
+                        await account.updatePrefs(
+                            reputation:0
+                        )
+                    }
+
+                    set({session, jwt, user});
+                    return {success:true}
+                } catch (error) {
+                    console.log("error in the auth.ts in login",error)
+                    return({
+                        success:false,
+                        error: error instanceof AppwriteException ?
+                        error :null
+                    })
+                }
+            },
+
+            async createAccount(name:string,email:string,password:string){
+                try {
+                    await account.create(ID.unique(),email,password,name);
+                    return{success:true}
+                } catch (error) {
+                    console.log("Error in the auth.ts createAccount method",error);
+                    return({
+                        success : false,
+                        error: error instanceof AppwriteException ?
+                        error :null
+                    })
+                }
+            },
+
+            async logout(){
+                try {
+                    await account.deleteSession();
+                    set({session:null, jwt:null, user:null})
+                } catch (error) {
+                    console.log("Error in the auth.ts Logout method",error);
+                    return({
+                        success : false,
+                        error: error instanceof AppwriteException ?
+                        error :null
+                    })
+                }
+            },
         })),
         {
             name:"auth",
